@@ -1,8 +1,9 @@
 module Str8ts where
 import Slot
-import Utils(reduce, replaceAtWith, flatten, repeatEach, chunksOf, splitWhenF, slice, transposeList, indexOnTransposedSqMatrix)
-import Data.List(transpose, sort, elemIndex, delete, notElem, find)
-import Data.Maybe(isNothing)
+    ( ISlot(getColor, getValue), Slot(..), SlotColor(Black, White) )
+import Utils
+    ( chunksOf, reduce, repeatEach, replaceAtWith, splitWhenF )
+import Data.List ( sort, delete, elemIndex, transpose )
 
 class IStr8ts s where
     isFullfiled :: s -> Bool
@@ -15,9 +16,7 @@ class IStr8ts s where
     getColumns :: s -> [[Slot]]
     getWhiteConsecutiveColumns :: s -> [[Slot]]
     getLineOfIdx :: s -> Int -> [Slot]
-    getWCLineOfIdx :: s -> Int -> [Slot]
     getColumnOfIdx :: s -> Int -> [Slot]
-    getWCColumnOfIdx :: s -> Int -> [Slot]
 
 data Str8ts = Str8ts [Slot] Int
 
@@ -123,18 +122,6 @@ instance IStr8ts Str8ts where
         let indexedData = zip dt [0..((length dt) - 1)]
         in
             [e | (e,i) <- indexedData, i `div` sz == idx `div` sz]
-
-    getWCLineOfIdx (Str8ts dt sz) idx =
-        let indexedData = zip dt [0..((length dt) - 1)]
-        in
-            [e | (e,i) <- indexedData, i `div` sz == idx `div` sz, (isNothing (find (\s -> (getColor s) == Black) (slice (min i idx) ((max i idx) + 1) dt)))]
-
-    getWCColumnOfIdx (Str8ts dt sz) idx =
-        let indexedData = zip dt [0..((length dt) - 1)]
-            trdt = transposeList dt sz
-            idxt = indexOnTransposedSqMatrix idx sz
-        in
-            [e | (e,i) <- indexedData, i `mod` sz == idx `mod` sz, let it = indexOnTransposedSqMatrix i sz in (isNothing (find (\s -> (getColor s) == Black) (slice (min it idxt) ((max it idxt) + 1) trdt)))]
 
     getColumnOfIdx (Str8ts dt sz) idx =
         let indexedData = zip dt [0..((length dt) - 1)]
