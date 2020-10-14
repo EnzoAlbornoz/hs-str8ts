@@ -26,3 +26,4 @@
 2020-10-14 00:13:37.038139100000 [6858(ThreadId 13)] ERROR APP - start debugging failed. user error (ExecResult not found.) : Left "user error (ExecResult not found.)"
 2020-10-14 00:13:42.224310500000 [6858(ThreadId 13)] ERROR APP - user error (loaded module can not find from path. </home/enzo/Workspace/study/programmingParadigms/work1/Str8ts.hs> [("Main","/home/enzo/Workspace/study/programmingParadigms/work1/main.hs"),("Slot","./Slot.hs"),("Str8ts","./Str8ts.hs"),("Utils","./Utils.hs")])
 2020-10-14 00:13:44.838848300000 [6858(ThreadId 16)] CRITICAL THREAD_MGR - Critical exit started.
+2020-10-14 13:52:23.400573700000 [1477(ThreadId 13)] ERROR APP - user error (loaded module can not find from path. </home/enzo/Workspace/study/programmingParadigms/work1/Str8ts.hs> [("Main","/home/enzo/Workspace/study/programmingParadigms/work1/main.hs"),("Slot","./Slot.hs"),("Str8ts","./Str8ts.hs"),("Utils","./Utils.hs")])
