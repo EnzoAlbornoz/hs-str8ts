@@ -1,8 +1,7 @@
-import Str8ts
-import Slot
-import Data.Time
-import Data.List(sort, elemIndex, intercalate)
-import Utils(reduce, replaceAtWith, flatten, repeatEach, chunksOf)
+import Str8ts ( IStr8ts(getRows, backTrack), Str8ts(Str8ts) )
+import Slot ( Slot(Slot), SlotColor(White, Black) )
+import Data.Time ( diffUTCTime, getCurrentTime )
+import Data.List(intercalate)
 
 main = do
     let sz = 6
