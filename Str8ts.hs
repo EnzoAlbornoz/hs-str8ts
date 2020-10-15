@@ -29,12 +29,12 @@ instance IStr8ts Str8ts where
     getColumns (Str8ts dt sz) = (transpose (getRows (Str8ts dt sz)))
     getWhiteConsecutiveColumns m = concatMap (\r -> (splitWhenF (\re -> (getColor re) == Black) r)) (getColumns m)
     isValidSolution (Str8ts dt sz)
-        -- Nesta parte, primeiro verificamos se o sistema está preenchido
+        -- Check if board has no empty slots 
         | (not (isFullfiled (Str8ts dt sz))) = False
-        -- Agora, verificamos se ele não fere a nenhum dos sistemas de validação
+        -- Check if not error occurs
         | otherwise = 
             (not 
-                -- Verifica por inconsistencias nas Linhas
+                -- Try find inconsistencies on lines
                 ((length (filter checkError (
                     map (\r -> (
                         filter (\e -> (
@@ -43,7 +43,7 @@ instance IStr8ts Str8ts where
                     ) (getWhiteConsecutiveRows (Str8ts dt sz))
                 )) > 0)
                     ||
-                -- Verifica por inconsistencias nas Colunas
+                -- Try find inconsistencies on columns
                 (length (filter checkError (
                     map (\r -> (
                         filter (\e -> (
@@ -53,8 +53,10 @@ instance IStr8ts Str8ts where
                 )) > 0))
             )
             where
-                -- A inconsistencia é constatada ao ordernar os valores
+                -- Inconsistencies are detected when sorting the values of 
+                -- slots and then checking for values bounds and sequence forming 
                 checkError wr =
+                    -- Sort array
                     let sortedArr = (sort wr) in 
                         length 
                             (filter
@@ -64,10 +66,13 @@ instance IStr8ts Str8ts where
                                         if i == 0 then
                                             False
                                         else
+                                            -- Check for sequence
                                             ((getValue (sortedArr!!(i - 1))) /= ((getValue e) - 1))
                                                 || 
+                                            -- Check for lower bound
                                             (getValue e) < 1
                                                 || 
+                                            -- Check for upper bound
                                             (getValue e) > sz
                                     )
                                     sortedArr
@@ -76,16 +81,25 @@ instance IStr8ts Str8ts where
                             ) > 0
     backTrack (Str8ts dt sz) =
         let 
-            infSzPos = (repeat ([(Slot White x) | x <- [1..sz]]))
+            -- Infinite list of possible values for an White Slot in NxN board
+            infSzPos = (repeat ([(Slot White x) | x <- [1..sz]])) 
+            -- Qty of blank White Slots on the board
             numOfBlankSlots = length (filter (\s -> (getValue s) == 0 && (getColor s) == White) dt)
+            -- Finite list os all possible values (Blank Slots Possibilities - BSP)
             bsPos = take numOfBlankSlots infSzPos
+            -- Generate List of Possible Solutions LPS
             blankPossibilities = 
+                -- Reduce over BSP with the LPS as accumulated value
                 reduce (\a n -> 
                     let 
+                        -- Compute the index of the next blank slot (that will be replaced)
                         Just iob = (elemIndex (Slot White 0) (a!!0))
                         son = (length n)
                         in (
+                            -- For each element of LPS, replace the blank value with an possible value
+                            -- (Going to next level on the Possibilities Tree)
                             concatMap (\sll -> 
+                                -- Filter values of BSP based on heuristics
                                 let optn = ([l |
                                         l <- n,
                                         let line = (getLineOfIdx (Str8ts (sll!!0) sz) iob),
@@ -99,6 +113,7 @@ instance IStr8ts Str8ts where
                                         (length lineZB == 0 || (getValue l) - (foldr1 min lineZB) < (length lineB)),
                                         (length colZB == 0 || (getValue l) - (foldr1 min colZB) < (length colB))
                                         ]) in
+                                -- Compute replacement
                                 zipWith (\sl rv -> 
                                     replaceAtWith sl iob rv
                                 ) sll optn
@@ -109,11 +124,17 @@ instance IStr8ts Str8ts where
         in
             (backTrackStep sz blankPossibilities)
         where
+            -- If there's no possibility, then return no value
+            backTrackStep _ [] = Nothing
             backTrackStep s b = 
                 let 
+                    -- Take one solution from BSP
                     sln = (take 1 b)!!0
                     m = (Str8ts sln s) 
                 in 
+                    -- Check if it is valid, returning it if true 
+                    -- or removing the value from the backTrack list
+                    -- then trying to get the next value
                     if (isValidSolution m) then 
                         Just m 
                     else (backTrackStep s (delete sln b))
